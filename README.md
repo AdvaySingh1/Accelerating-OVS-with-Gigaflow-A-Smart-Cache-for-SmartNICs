@@ -1,10 +1,10 @@
 # Accelerating OVS with Gigaflow: A Smart Cache for SmartNICs
 
 ## GSoC 2025 Final Report
-**Student:** Advay Singh  
-**Project:** Accelerating Open vSwitch (OVS) with Gigaflow Smart Cache Implementation on SmartNICs  
-**Organization:** The P4 Language Consortium
-**Mentors:** Annus Zulfiqar, Ali Imran, Muhammad Shahbaz, David Scano, Murayyiam Parvez
+**Student**: Advay Singh  
+**Project**: Accelerating Open vSwitch (OVS) with Gigaflow Smart Cache Implementation on SmartNICs  
+**Organization**: The P4 Language Consortium
+**Mentors**:Annus Zulfiqar, Ali Imran, Muhammad Shahbaz, David Scano, Murayyiam Parvez
 ---
 
 ## Executive Summary
@@ -19,6 +19,7 @@ This project successfully extends the Gigaflow Virtual Switch (GVS) (find out mo
 
 The core contribution of this project is the extension of the Gigaflow Virtual Switch to support hardware acceleration through SmartNIC offload. The enhanced GVS maintains full backward compatibility with the software-only implementation while adding comprehensive hardware acceleration capabilities.
 
+**Repository**: [Enhanced GVS](https://github.com/AdvaySingh1/gvs)
 
 ### Architecture and Design
 
@@ -35,27 +36,6 @@ The hardware integration layer provides a unified abstraction for different Smar
 **SDNet Driver Integration**: The enhanced GVS integrates with Xilinx's SDNet IP through custom drivers that handle rule installation, table updates, and statistics collection. The SDNet files included in the project are auto-generated when the bitstream is created through the Vivado software compilation process.
 
 **Rule Translation Engine**: Converts high-level Gigaflow cache policies into hardware-compatible table entries and match-action rules that can be programmed into the P4 pipeline.
-
-**Flow State Synchronization**: Maintains consistency between software and hardware flow tables, ensuring seamless failover and load balancing between processing domains.
-
-**Performance Monitoring**: Real-time collection of hardware performance metrics including throughput, latency, cache hit rates, and resource utilization.
-
-### P4 Pipeline Implementation
-
-The hardware pipeline implements the complete Gigaflow cache logic in P4, including:
-
-- **Multi-stage Cache Lookup**: Hierarchical cache structure with L1 and L2 lookup stages
-- **Adaptive Replacement Policy**: Hardware implementation of cache replacement algorithms including LRU and frequency-based eviction
-- **Flow Classification**: High-speed packet classification using ternary and exact match tables
-- **Statistics Collection**: Per-flow and aggregate statistics maintained in hardware registers
-
-### Enhanced Features
-
-**Dynamic Reconfiguration**: Runtime modification of cache policies and table sizes without pipeline restart
-**Multi-tenant Support**: Isolated cache domains for different virtual networks or tenants  
-**Telemetry Integration**: Export of detailed flow and performance data to monitoring systems
-**Fault Tolerance**: Automatic failover to software processing when hardware resources are exhausted
-
 ### Integration with Open vSwitch
 
 The enhanced GVS maintains full compatibility with OVS through the existing datapath interface while extending it with hardware acceleration hooks. The integration supports:
@@ -73,11 +53,15 @@ The enhanced GVS maintains full compatibility with OVS through the existing data
 
 ### Additional Orchestrators
 - **MLX Orchestrator**: Initial framework for MLX NIC integration with traffic generation and performance benchmarking utilities
+  - **Repository**: [MLX Orchestrator](https://github.com/AdvaySingh1/gigaflow-orchestrator)
 - **NetFPGA Orchestrator**: Kernel-mode integration with comprehensive test suite for NetFPGA platforms, providing rule installation APIs and pipeline validation
+  - **Repository**: [NetFPGA Orchestrator](https://github.com/AdvaySingh1/gigaflow-orchestrator-p4sdnet-offload)
 - **P4 Behavioral Simulation**: Pre-deployment testing framework using Vivado simulation tools for comprehensive P4 code validation
+  - **Repository**: [P4 Behavioral Simulation](https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim)
 
 ### NetFPGA Hardware Offload
 - **P4 Implementation**: Complete P4 pipeline for NetFPGA AU250 with Vivado compilation and bitstream generation
+  - **Repository**: [P4 Implementation (NetFPGA)](https://github.com/AdvaySingh1/NetFPGA-au250-Offload)
 - **Shell Integration**: NetFPGA AU250 shell integration with P4SDNet IP configuration and wrapper logic
 - **Hardware Optimization**: Resource optimization and wire-speed packet processing capabilities
 

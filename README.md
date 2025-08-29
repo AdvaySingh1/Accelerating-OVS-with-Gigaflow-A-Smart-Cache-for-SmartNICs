@@ -20,113 +20,125 @@ This project successfully extends the Gigaflow Virtual Switch (GVS) framework to
 
 ---
 
-## Project Architecture
+## Enhanced Gigaflow Virtual Switch (GVS)
 
-The project consists of five interconnected repositories, each serving a specific role in the hardware acceleration pipeline:
+The core contribution of this project is the extension of the Gigaflow Virtual Switch to support hardware acceleration through SmartNIC offload. The enhanced GVS maintains full backward compatibility with the software-only implementation while adding comprehensive hardware acceleration capabilities.
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  MLX Orchestrator│    │NetFPGA Orchestr.│    │   P4 Simulation │
-│   (Traffic Gen)  │    │  (Kernel Mode)  │    │   (Pre-deploy)  │
-└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
-          │                      │                      │
-          └──────────────────────┼──────────────────────┘
-                                 │
-          ┌─────────────────┐    │    ┌─────────────────┐
-          │ NetFPGA Offload │    │    │ Enhanced GVS    │
-          │ (P4 + Bitstream)│────┼────│ (HW Accel)     │
-          └─────────────────┘    │    └─────────────────┘
-                                 │
-                        Hardware Abstraction Layer
-```
+### Architecture and Design
 
----
+The enhanced GVS implements a hybrid software-hardware architecture where the Gigaflow cache can operate in three distinct modes:
 
-## 🔧 Repository Overview
+1. **Software-only Mode**: Traditional CPU-based packet processing with the original Gigaflow cache implementation
+2. **Hardware-assisted Mode**: Critical path operations offloaded to SmartNIC while maintaining software control plane
+3. **Full Hardware Mode**: Complete pipeline execution on SmartNIC with minimal CPU involvement
 
-### 1. [MLX Orchestrator](https://github.com/AdvaySingh1/gigaflow-orchestrator)
-**Purpose**: Initial orchestrator for MLX NIC integration with GVS and traffic generation.
+### Hardware Integration Layer
 
-This repository provides the foundational framework for integrating Gigaflow with MLX SmartNICs. It includes traffic generation utilities, MLX-specific drivers, and configuration management tools. The orchestrator handles the setup and coordination between the software GVS implementation and MLX hardware acceleration capabilities.
+The hardware integration layer provides a unified abstraction for different SmartNIC platforms. The implementation includes:
 
-**Key Features**:
-- MLX NIC detection and initialization
-- Traffic pattern generation for testing
-- Performance benchmarking utilities
-- Integration scripts for GVS deployment
+**SDNet Driver Integration**: The enhanced GVS integrates with Xilinx's SDNet IP through custom drivers that handle rule installation, table updates, and statistics collection. The SDNet files included in the project are auto-generated when the bitstream is created through the Vivado software compilation process.
 
-### 2. [NetFPGA Orchestrator](https://github.com/AdvaySingh1/gigaflow-orchestrator-p4sdnet-offload)
-**Purpose**: NetFPGA integration with kernel mode support and comprehensive testing framework.
+**Rule Translation Engine**: Converts high-level Gigaflow cache policies into hardware-compatible table entries and match-action rules that can be programmed into the P4 pipeline.
 
-This orchestrator extends the MLX work to support NetFPGA platforms, providing kernel-mode operation and a robust test suite. It bridges the gap between the P4 hardware implementation and the software control plane, enabling seamless rule installation and pipeline management.
+**Flow State Synchronization**: Maintains consistency between software and hardware flow tables, ensuring seamless failover and load balancing between processing domains.
 
-**Key Features**:
-- Kernel mode NetFPGA driver integration
-- Automated test suite for pipeline validation
-- Rule installation and management APIs
-- Performance monitoring and debugging tools
+**Performance Monitoring**: Real-time collection of hardware performance metrics including throughput, latency, cache hit rates, and resource utilization.
 
-### 3. [NetFPGA Hardware Offload](https://github.com/AdvaySingh1/NetFPGA-au250-Offload)
-**Purpose**: P4 implementation with Vivado compilation and bitstream generation for NetFPGA AU250.
+### P4 Pipeline Implementation
 
-This repository contains the core P4 code that implements the Gigaflow cache pipeline in hardware. The code is designed to work with Xilinx's P4SDNet IP and includes the complete NetFPGA shell integration. The implementation provides wire-speed packet processing with configurable cache policies.
+The hardware pipeline implements the complete Gigaflow cache logic in P4, including:
 
-**Key Features**:
-- P4 Gigaflow pipeline implementation
-- Vivado project files and build scripts
-- NetFPGA AU250 shell integration
-- P4SDNet IP configuration and wrapper logic
-- Hardware resource optimization
+- **Multi-stage Cache Lookup**: Hierarchical cache structure with L1 and L2 lookup stages
+- **Adaptive Replacement Policy**: Hardware implementation of cache replacement algorithms including LRU and frequency-based eviction
+- **Flow Classification**: High-speed packet classification using ternary and exact match tables
+- **Statistics Collection**: Per-flow and aggregate statistics maintained in hardware registers
 
-### 4. [Enhanced GVS](https://github.com/AdvaySingh1/gvs)
-**Purpose**: Modified Gigaflow Virtual Switch with hardware acceleration support.
+### Enhanced Features
 
-This is the main software component that extends the original GVS implementation to support hardware offload. The enhanced version maintains software compatibility while adding the ability to program hardware accelerators through SDNet drivers. It includes the complete Gigaflow cache logic with hardware-software co-design principles.
+**Dynamic Reconfiguration**: Runtime modification of cache policies and table sizes without pipeline restart
+**Multi-tenant Support**: Isolated cache domains for different virtual networks or tenants  
+**Telemetry Integration**: Export of detailed flow and performance data to monitoring systems
+**Fault Tolerance**: Automatic failover to software processing when hardware resources are exhausted
 
-**Key Features**:
-- Extended Gigaflow cache implementation
-- SDNet driver integration for rule programming
-- Backward compatibility with software-only mode
+### Integration with Open vSwitch
 
-### 5. [P4 Behavioral Simulation](https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim)
-**Purpose**: Pre-deployment P4 code testing and validation using Vivado simulation tools.
+The enhanced GVS maintains full compatibility with OVS through the existing datapath interface while extending it with hardware acceleration hooks. The integration supports:
 
-This testing framework enables comprehensive validation of the P4 implementation before hardware deployment. It includes behavioral models, test vectors, and automated verification scripts that ensure the P4 code functions correctly across various traffic patterns and edge cases.
-
-**Key Features**:
-- P4 behavioral simulation framework
-- Comprehensive test vector generation
-- Automated regression testing
-- Performance prediction models
-- Debug and profiling utilities
+- Standard OpenFlow protocol for rule installation
+- OVS userspace utilities and management tools  
+- Existing OVS-based orchestration platforms (OpenStack, Kubernetes)
+- Custom extensions for hardware-specific optimizations
 
 ---
 
-## Quick Start
+## Supporting Components
 
-### Prerequisites
-- Vivado 2019.2
-- NetFPGA AU250 development board
-- SDNet IP and P4SDNet driver
-- Linux kernel 5.4+
+### Additional Orchestrators
+- **MLX Orchestrator**: Initial framework for MLX NIC integration with traffic generation and performance benchmarking utilities
+- **NetFPGA Orchestrator**: Kernel-mode integration with comprehensive test suite for NetFPGA platforms, providing rule installation APIs and pipeline validation
+- **P4 Behavioral Simulation**: Pre-deployment testing framework using Vivado simulation tools for comprehensive P4 code validation
 
-### Setup Instructions
+### NetFPGA Hardware Offload
+- **P4 Implementation**: Complete P4 pipeline for NetFPGA AU250 with Vivado compilation and bitstream generation
+- **Shell Integration**: NetFPGA AU250 shell integration with P4SDNet IP configuration and wrapper logic
+- **Hardware Optimization**: Resource optimization and wire-speed packet processing capabilities
 
-1. **Clone repositories**:
-```bash
-git clone https://github.com/AdvaySingh1/gigaflow-orchestrator-p4sdnet-offload  
-git clone https://github.com/AdvaySingh1/NetFPGA-au250-Offload
-git clone https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim
-```
+---
 
-2. **Write P4 code and test**:
-Follow the instructions in the `p4c-sdnet-Behavioral-Sim` repository to write and test your P4 code.
+## Technical Learning and Expertise Gained
 
-3. **Build P4 bitstream**:
-Follow the instructions in the `NetFPGA-au250-Offload` repository to build the P4 bitstream using Vivado. Make sure to load the driver as well.
+Throughout this project, I gained extensive hands-on experience with cutting-edge data center networking technologies and hardware acceleration frameworks:
 
-4. **Deploy to hardware**:
-You may either follow the instructions in the `gvs` repository with OVS instructions or use the `gigaflow-orchestrator-p4sdnet-offload` repository to deploy the bitstream to the NetFPGA board. Due to configurations, `gigaflow-orchestrator-p4sdnet-offload` is recommended.
+### DPDK (Data Plane Development Kit)
+Gained deep expertise in DPDK for high-performance packet processing, including:
+- User-space packet processing and zero-copy techniques
+- Memory pool management and hugepage utilization  
+- Poll Mode Driver (PMD) implementation and optimization
+- Integration with hardware acceleration platforms
+
+### Vivado Design Suite
+Developed comprehensive skills in Xilinx's Vivado toolchain:
+- P4-to-HDL compilation workflows using P4SDNet
+- Timing closure and resource utilization optimization
+- IP core integration and custom wrapper development
+- Hardware debugging using integrated logic analyzers
+
+### AXI-Stream Protocol
+Mastered AXI-Stream interface design and implementation:
+- Stream processing pipeline design for packet data
+- Backpressure handling and flow control mechanisms
+- Multi-stream arbitration and packet ordering
+- Integration with NetFPGA shell and custom IP cores
+
+### Driver Implementation (PCI MMIO DMA)
+Implemented low-level hardware drivers including:
+- PCI Express enumeration and configuration space management
+- Memory-mapped I/O (MMIO) register access patterns
+- Direct Memory Access (DMA) engine programming
+- Interrupt handling and completion queue management
+- Kernel-space to user-space communication interfaces
+
+### Data Center Networking
+Gained practical experience with modern data center architectures:
+- Software-Defined Networking (SDN) principles and implementation
+- Network Function Virtualization (NFV) and service chaining
+- Multi-tenant network isolation and performance guarantees  
+- Load balancing and traffic engineering in virtualized environments
+
+### Advanced P4 Programming
+Developed expertise in sophisticated P4 constructs:
+- Complex match-action table designs with multiple stages
+- Stateful packet processing using registers and meters
+- Custom extern functions for hardware-specific operations
+- Parser and deparser optimization for line-rate processing
+- P4Runtime integration for dynamic pipeline reconfiguration
+
+### Hardware-Software Co-design
+Learned critical co-design principles:
+- Partitioning algorithms between software and hardware domains
+- Latency and throughput optimization across processing boundaries
+- Resource management and scheduling in hybrid systems
+- Debugging methodologies for distributed processing pipelines
 
 ---
 
@@ -141,30 +153,6 @@ The hardware-accelerated Gigaflow implementation demonstrates significant perfor
 
 ---
 
-## 🔄 Development Timeline
-
-### Phase 1: Foundation (Weeks 1-4)
-- MLX orchestrator development and initial GVS integration
-- Traffic generation framework implementation
-- Basic performance benchmarking
-
-### Phase 2: NetFPGA Integration (Weeks 5-8)
-- P4 pipeline design and implementation
-- NetFPGA shell integration and driver development
-- Kernel mode orchestrator with test suite
-
-### Phase 3: Hardware Acceleration (Weeks 9-12)
-- Vivado compilation and bitstream generation
-- SDNet driver integration with GVS
-- Hardware-software co-design optimization
-
-### Phase 4: Testing and Validation (Weeks 13-16)
-- Comprehensive simulation framework development
-- End-to-end system testing and debugging
-- Performance optimization and documentation
-
----
-
 ## Future Work
 
 - **Multi-vendor Support**: Extend support to other SmartNIC platforms (Intel IPU, NVIDIA BlueField)
@@ -175,18 +163,6 @@ The hardware-accelerated Gigaflow implementation demonstrates significant perfor
 
 ---
 
-## Documentation
-
-- [Technical Architecture](./reports/main.md)
-- [Per-Repository Details](./reports/)
-- [Setup and Reproduction Guide](./HOWTO-REPRODUCE.md)
-- [Development Changelog](./CHANGELOG-GSoC.md)
-- [Demo Videos](./artifacts/demo.mp4)
-
----
-
 ## Acknowledgments
 
 Special thanks to my mentors and the open-source community for their guidance and support throughout this GSoC project. The work builds upon the excellent foundation provided by the original GVS project and the NetFPGA community.
-
----

@@ -11,18 +11,14 @@
 
 This project successfully extends the Gigaflow Virtual Switch (GVS) (find out more [here](https://gigaflow-vswitch.github.io/)) framework to enable hardware acceleration on SmartNICs, specifically targeting NetFPGA platforms. The work bridges the gap between software-defined networking and hardware acceleration by implementing a complete pipeline from P4 code compilation to bitstream deployment and runtime rule management.
 
-### Key Achievements
-**MLX NIC Integration**: Complete orchestrator for traffic generation and GVS integration
-**NetFPGA Hardware Offload**: P4-based pipeline with Vivado compilation and bitstream deployment  
-**Kernel Mode Support**: NetFPGA orchestrator with comprehensive test suite
-**P4 Behavioral Simulation**: Pre-deployment testing framework using Vivado tools
-**Enhanced GVS**: Hardware-accelerated Gigaflow cache with SDNet driver integration
-
 ---
 
 ## Enhanced Gigaflow Virtual Switch (GVS)
 
+![Alt text](assets/GSOC_img_1.png "GVS Acceleration Image")
+
 The core contribution of this project is the extension of the Gigaflow Virtual Switch to support hardware acceleration through SmartNIC offload. The enhanced GVS maintains full backward compatibility with the software-only implementation while adding comprehensive hardware acceleration capabilities.
+
 
 ### Architecture and Design
 
@@ -72,6 +68,8 @@ The enhanced GVS maintains full compatibility with OVS through the existing data
 ---
 
 ## Supporting Components
+
+![Alt text](assets/GSOC_img_2.png "Orchestration Image")
 
 ### Additional Orchestrators
 - **MLX Orchestrator**: Initial framework for MLX NIC integration with traffic generation and performance benchmarking utilities
@@ -144,22 +142,7 @@ Learned critical co-design principles:
 
 ## Results and Performance
 
-The hardware-accelerated Gigaflow implementation demonstrates significant performance improvements over software-only solutions:
-
-- **Throughput**: Up to 40Gbps wire-speed processing on NetFPGA AU250
-- **Latency**: Sub-microsecond cache lookup times
-- **Power Efficiency**: 60% reduction in CPU utilization for equivalent workloads
-- **Scalability**: Support for 1M+ concurrent flows
-
----
-
-## Future Work
-
-- **Multi-vendor Support**: Extend support to other SmartNIC platforms (Intel IPU, NVIDIA BlueField)
-- **Enhanced Caching Policies**: Implement adaptive and ML-based cache replacement algorithms
-- **Container Integration**: Docker and Kubernetes integration for cloud deployments
-- **Telemetry and Monitoring**: Advanced observability features for production environments
-- **Security Features**: Implement hardware-based security policies and encryption
+The hardware-accelerated Gigaflow implementation demonstrates significant performance improvements over software-only solutions. Currently in the process for final steps of benchmarking and testing, but initial results prior to pull request to GVS.
 
 ---
 

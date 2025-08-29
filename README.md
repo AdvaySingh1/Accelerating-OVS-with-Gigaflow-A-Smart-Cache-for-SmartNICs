@@ -3,9 +3,8 @@
 ## GSoC 2025 Final Report
 **Student:** Advay Singh  
 **Project:** Accelerating Open vSwitch (OVS) with Gigaflow Smart Cache Implementation on SmartNICs  
-**Organization:** [Organization Name]  
-**Mentors:** [Mentor Names]
-
+**Organization:** The P4 Language Consortium
+**Mentors:** Annus Zulfiqar, Ali Imran, Muhammad Shahbaz, David Scano, Murayyiam Parvez
 ---
 
 ## Executive Summary
@@ -108,42 +107,28 @@ This testing framework enables comprehensive validation of the P4 implementation
 ## Quick Start
 
 ### Prerequisites
-- Vivado 2021.2 or later
+- Vivado 2019.2
 - NetFPGA AU250 development board
-- MLX SmartNIC (for MLX orchestrator)
-- Linux kernel 5.4+ with NetFPGA drivers
-- P4 compiler toolchain
+- SDNet IP and P4SDNet driver
+- Linux kernel 5.4+
 
 ### Setup Instructions
 
-1. **Clone all repositories**:
+1. **Clone repositories**:
 ```bash
-git clone https://github.com/AdvaySingh1/gigaflow-orchestrator
 git clone https://github.com/AdvaySingh1/gigaflow-orchestrator-p4sdnet-offload  
 git clone https://github.com/AdvaySingh1/NetFPGA-au250-Offload
-git clone https://github.com/AdvaySingh1/gvs
 git clone https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim
 ```
 
-2. **Build P4 bitstream**:
-```bash
-cd NetFPGA-au250-Offload
-make build-bitstream
-```
+2. **Write P4 code and test**:
+Follow the instructions in the `p4c-sdnet-Behavioral-Sim` repository to write and test your P4 code.
 
-3. **Run simulation tests**:
-```bash
-cd p4c-sdnet-Behavioral-Sim
-make test-all
-```
+3. **Build P4 bitstream**:
+Follow the instructions in the `NetFPGA-au250-Offload` repository to build the P4 bitstream using Vivado. Make sure to load the driver as well.
 
 4. **Deploy to hardware**:
-```bash
-cd gigaflow-orchestrator-p4sdnet-offload
-./deploy.sh --target netfpga
-```
-
-For detailed setup instructions, see [HOWTO-REPRODUCE.md](./HOWTO-REPRODUCE.md).
+You may either follow the instructions in the `gvs` repository with OVS instructions or use the `gigaflow-orchestrator-p4sdnet-offload` repository to deploy the bitstream to the NetFPGA board. Due to configurations, `gigaflow-orchestrator-p4sdnet-offload` is recommended.
 
 ---
 
@@ -207,12 +192,3 @@ The hardware-accelerated Gigaflow implementation demonstrates significant perfor
 Special thanks to my mentors and the open-source community for their guidance and support throughout this GSoC project. The work builds upon the excellent foundation provided by the original GVS project and the NetFPGA community.
 
 ---
-
-## License
-
-This project is licensed under the [License](./LICENSE) - see the license file for details.
-
----
-
-**Project Status**: Completed Successfully  
-**Merge Status**: Pull requests pending review and integration

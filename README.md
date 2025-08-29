@@ -12,11 +12,11 @@
 This project successfully extends the Gigaflow Virtual Switch (GVS) framework to enable hardware acceleration on SmartNICs, specifically targeting NetFPGA and MLX platforms. The work bridges the gap between software-defined networking and hardware acceleration by implementing a complete pipeline from P4 code compilation to bitstream deployment and runtime rule management.
 
 ### Key Achievements
-- **MLX NIC Integration**: Complete orchestrator for traffic generation and GVS integration
-- **NetFPGA Hardware Offload**: P4-based pipeline with Vivado compilation and bitstream deployment  
-- **Kernel Mode Support**: NetFPGA orchestrator with comprehensive test suite
-- **P4 Behavioral Simulation**: Pre-deployment testing framework using Vivado tools
-- **Enhanced GVS**: Hardware-accelerated Gigaflow cache with SDNet driver integration
+**MLX NIC Integration**: Complete orchestrator for traffic generation and GVS integration
+**NetFPGA Hardware Offload**: P4-based pipeline with Vivado compilation and bitstream deployment  
+**Kernel Mode Support**: NetFPGA orchestrator with comprehensive test suite
+**P4 Behavioral Simulation**: Pre-deployment testing framework using Vivado tools
+**Enhanced GVS**: Hardware-accelerated Gigaflow cache with SDNet driver integration
 
 ---
 
@@ -86,8 +86,6 @@ This is the main software component that extends the original GVS implementation
 **Key Features**:
 - Extended Gigaflow cache implementation
 - SDNet driver integration for rule programming
-- Hardware-software load balancing
-- Performance optimization and telemetry
 - Backward compatibility with software-only mode
 
 ### 5. [P4 Behavioral Simulation](https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim)

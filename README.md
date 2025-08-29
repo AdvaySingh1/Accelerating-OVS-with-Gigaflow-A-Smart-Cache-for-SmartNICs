@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This project successfully extends the Gigaflow Virtual Switch (GVS) framework to enable hardware acceleration on SmartNICs, specifically targeting NetFPGA and MLX platforms. The work bridges the gap between software-defined networking and hardware acceleration by implementing a complete pipeline from P4 code compilation to bitstream deployment and runtime rule management.
+This project successfully extends the Gigaflow Virtual Switch (GVS) (find out more [here](https://gigaflow-vswitch.github.io/)) framework to enable hardware acceleration on SmartNICs, specifically targeting NetFPGA platforms. The work bridges the gap between software-defined networking and hardware acceleration by implementing a complete pipeline from P4 code compilation to bitstream deployment and runtime rule management.
 
 ### Key Achievements
 **MLX NIC Integration**: Complete orchestrator for traffic generation and GVS integration

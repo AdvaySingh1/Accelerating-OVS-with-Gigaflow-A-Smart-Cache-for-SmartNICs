@@ -3,8 +3,8 @@
 ## GSoC 2025 Final Report
 **Student**: Advay Singh  
 **Project**: Accelerating Open vSwitch (OVS) with Gigaflow Smart Cache Implementation on SmartNICs  
-**Organization**: The P4 Language Consortium
-**Mentors**:Annus Zulfiqar, Ali Imran, Muhammad Shahbaz, David Scano, Murayyiam Parvez
+**Organization**: The P4 Language Consortium  
+**Mentors**: Annus Zulfiqar, Ali Imran, Muhammad Shahbaz, David Scano, Murayyiam Parvez
 ---
 
 ## Executive Summary
@@ -15,8 +15,6 @@ This project successfully extends the Gigaflow Virtual Switch (GVS) (find out mo
 
 ## Enhanced Gigaflow Virtual Switch (GVS)
 
-![Alt text](assets/GSOC_img_1.png "GVS Acceleration Image")
-
 The core contribution of this project is the extension of the Gigaflow Virtual Switch to support hardware acceleration through SmartNIC offload. The enhanced GVS maintains full backward compatibility with the software-only implementation while adding comprehensive hardware acceleration capabilities.
 
 **Repository**: [Enhanced GVS](https://github.com/AdvaySingh1/gvs)
@@ -26,8 +24,9 @@ The core contribution of this project is the extension of the Gigaflow Virtual S
 The enhanced GVS implements a hybrid software-hardware architecture where the Gigaflow cache can operate in three distinct modes:
 
 1. **Software-only Mode**: Traditional CPU-based packet processing with the original Gigaflow cache implementation
-2. **Hardware-assisted Mode**: Critical path operations offloaded to SmartNIC while maintaining software control plane
-3. **Full Hardware Mode**: Complete pipeline execution on SmartNIC with minimal CPU involvement
+2. **Full Hardware Mode**: Complete pipeline execution on SmartNIC with minimal CPU involvement
+
+The following are the additions to the original GVS:
 
 ### Hardware Integration Layer
 
@@ -36,20 +35,14 @@ The hardware integration layer provides a unified abstraction for different Smar
 **SDNet Driver Integration**: The enhanced GVS integrates with Xilinx's SDNet IP through custom drivers that handle rule installation, table updates, and statistics collection. The SDNet files included in the project are auto-generated when the bitstream is created through the Vivado software compilation process.
 
 **Rule Translation Engine**: Converts high-level Gigaflow cache policies into hardware-compatible table entries and match-action rules that can be programmed into the P4 pipeline.
+
 ### Integration with Open vSwitch
 
-The enhanced GVS maintains full compatibility with OVS through the existing datapath interface while extending it with hardware acceleration hooks. The integration supports:
-
-- Standard OpenFlow protocol for rule installation
-- OVS userspace utilities and management tools  
-- Existing OVS-based orchestration platforms (OpenStack, Kubernetes)
-- Custom extensions for hardware-specific optimizations
+The enhanced GVS maintains full compatibility with OVS through the existing datapath interface while extending it with hardware acceleration flow offload APIs. The integration supports:
 
 ---
 
 ## Supporting Components
-
-![Alt text](assets/GSOC_img_2.png "Orchestration Image")
 
 ### Additional Orchestrators
 - **MLX Orchestrator**: Initial framework for MLX NIC integration with traffic generation and performance benchmarking utilities
@@ -67,60 +60,22 @@ The enhanced GVS maintains full compatibility with OVS through the existing data
 
 ---
 
+## Project Workflow
+![Alt text](assets/GSOC_img_1.png "GVS Acceleration Image")
+1. This image shows the main workflow of the project. Initially, P4 code was written and tested using the [P4 Behavioral Simulation](https://github.com/AdvaySingh1/p4c-sdnet-Behavioral-Sim). 
+2. Then, the P4 code was compiled into a bitstream using Vivado and the [P4 Implementation (NetFPGA)](https://github.com/AdvaySingh1/NetFPGA-au250-Offload) repository. This compilation process also developed the SDNet driver integration for the enhanced GVS.
+3. The bitstream is then loaded onto the Xilinx AU250 card and the SDNet driver is probed to the kernel. Upon this, the test suite inside the [P4 Implementation (NetFPGA)](https://github.com/AdvaySingh1/NetFPGA-au250-Offload) repository was run for testing basic functionality of the hardware offload.
+4. Following this, [GVS](https://github.com/AdvaySingh1/gvs) was modified to support the hardware offload. While the Gigaflow logic existed in the software-only mode, flow translation was introduced to translate high-level Gigaflow cache policies into hardware-compatible table entries and match-action rules that can be programmed into the P4 pipeline.
+5. Finally, the [NetFPGA Orchestrator](https://github.com/AdvaySingh1/gigaflow-orchestrator-p4sdnet) was developed to provide a unified interface for rule installation and pipeline management. This also included the development of a test suite to validate the functionality of the hardware offload.
+
+The following is a sample diagram of the project setup:
+![Alt text](assets/GSOC_img_2.png "Orchestration Image")
+
 ## Technical Learning and Expertise Gained
 
-Throughout this project, I gained extensive hands-on experience with cutting-edge data center networking technologies and hardware acceleration frameworks:
+Throughout this project, I gained extensive hands-on experience with cutting-edge data center networking technologies and hardware acceleration frameworks. Key areas include advanced P4 programming with complex match-action table designs and stateful packet processing, comprehensive DPDK expertise for high-performance packet processing and zero-copy techniques, and Vivado Design Suite proficiency for P4-to-HDL compilation workflows and hardware debugging. 
 
-### DPDK (Data Plane Development Kit)
-Gained deep expertise in DPDK for high-performance packet processing, including:
-- User-space packet processing and zero-copy techniques
-- Memory pool management and hugepage utilization  
-- Poll Mode Driver (PMD) implementation and optimization
-- Integration with hardware acceleration platforms
-
-### Vivado Design Suite
-Developed comprehensive skills in Xilinx's Vivado toolchain:
-- P4-to-HDL compilation workflows using P4SDNet
-- Timing closure and resource utilization optimization
-- IP core integration and custom wrapper development
-- Hardware debugging using integrated logic analyzers
-
-### AXI-Stream Protocol
-Mastered AXI-Stream interface design and implementation:
-- Stream processing pipeline design for packet data
-- Backpressure handling and flow control mechanisms
-- Multi-stream arbitration and packet ordering
-- Integration with NetFPGA shell and custom IP cores
-
-### Driver Implementation (PCI MMIO DMA)
-Implemented low-level hardware drivers including:
-- PCI Express enumeration and configuration space management
-- Memory-mapped I/O (MMIO) register access patterns
-- Direct Memory Access (DMA) engine programming
-- Interrupt handling and completion queue management
-- Kernel-space to user-space communication interfaces
-
-### Data Center Networking
-Gained practical experience with modern data center architectures:
-- Software-Defined Networking (SDN) principles and implementation
-- Network Function Virtualization (NFV) and service chaining
-- Multi-tenant network isolation and performance guarantees  
-- Load balancing and traffic engineering in virtualized environments
-
-### Advanced P4 Programming
-Developed expertise in sophisticated P4 constructs:
-- Complex match-action table designs with multiple stages
-- Stateful packet processing using registers and meters
-- Custom extern functions for hardware-specific operations
-- Parser and deparser optimization for line-rate processing
-- P4Runtime integration for dynamic pipeline reconfiguration
-
-### Hardware-Software Co-design
-Learned critical co-design principles:
-- Partitioning algorithms between software and hardware domains
-- Latency and throughput optimization across processing boundaries
-- Resource management and scheduling in hybrid systems
-- Debugging methodologies for distributed processing pipelines
+I also developed skills in AXI-Stream protocol design for stream processing pipelines and backpressure handling, low-level driver implementation including PCI Express management and DMA engine programming, and modern data center networking concepts such as SDN principles and network function virtualization. Additionally, I learned critical hardware-software co-design principles including algorithm partitioning and latency optimization across processing boundaries.
 
 ---
 
@@ -129,6 +84,11 @@ Learned critical co-design principles:
 The hardware-accelerated Gigaflow implementation demonstrates significant performance improvements over software-only solutions. Currently in the process for final steps of benchmarking and testing, but initial results prior to pull request to GVS.
 
 ---
+
+## Helpful Links
+
+- **Gigaflow Project**: https://gigaflow-vswitch.github.io/ - Main Gigaflow project page
+- **NextGarch Lab**: https://nextgarch-lab-ergp6tq.gamma.site/ - Laboratory environment that supported this project
 
 ## Acknowledgments
 
